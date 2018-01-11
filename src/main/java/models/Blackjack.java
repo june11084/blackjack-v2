@@ -10,9 +10,9 @@ public class Blackjack {
 
     private String face;
     private int value;
-    private static ArrayList<Blackjack> deck;
-    private static ArrayList<Blackjack> player;
-    private static ArrayList<Blackjack> dealer;
+    private static ArrayList<Blackjack> deck = new ArrayList<>();
+    private static ArrayList<Blackjack> player = new ArrayList<>();
+    private static ArrayList<Blackjack> dealer = new ArrayList<>();
 
     public Blackjack (String face, int value) {
         this.face = face;
@@ -23,7 +23,7 @@ public class Blackjack {
         String[] suits = {"♠️", "♥", "♣", "♦"};
         String[] number = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
         int[] value = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10};
-        ArrayList<Blackjack> deck = new ArrayList<>();
+//        ArrayList<Blackjack> deck = new ArrayList<>();
 
         for(int suit = 0; suit < suits.length; suit++) {
             for(int cardNumber = 0; cardNumber < number.length; cardNumber++) {
@@ -53,6 +53,14 @@ public class Blackjack {
         }
     }
 
+    public int checkValue(ArrayList<Blackjack> playerDeck) {
+        int totalValue = 0;
+        for(int i = 0; i < playerDeck.size(); i++) {
+            totalValue += getValue(playerDeck.get(i));
+        }
+        return totalValue;
+    }
+
     public int checkDeckSize(ArrayList<Blackjack> playerDeck){
         return playerDeck.size();
     }
@@ -70,20 +78,36 @@ public class Blackjack {
     public void startGame(){
         player.clear();
         dealer.clear();
-
-        deck = createDeck();
-
         player.add(pickRandomCard(deck));
         player.add(pickRandomCard(deck));
-
         dealer.add(pickRandomCard(deck));
         dealer.add(pickRandomCard(deck));
     }
 
     public String checkWin(ArrayList<Blackjack> playerDeck,ArrayList<Blackjack> dealerDeck){
+        String result="";
         if(checkBust(playerDeck).equals("alive")&&checkBust(dealerDeck).equals("alive")){
-            if(playerDeck.getValue())
+            if(checkValue(playerDeck) > checkValue(dealerDeck)){
+                result = "player wins";
+            }
+            if(checkValue(playerDeck) <= checkValue(dealerDeck)){
+                result = "dealer wins";
+            }
+        }else if(checkBust(playerDeck).equals("alive")&&checkBust(dealerDeck).equals("bust")){
+            result = "player wins";
+        }else if(checkBust(playerDeck).equals("bust")&&checkBust(dealerDeck).equals("alive")){
+            result = "dealer wins";
+        }else if(checkBust(playerDeck).equals("bust")&&checkBust(dealerDeck).equals("bust")){
+            result = "dealer wins";
         }
+        return result;
     }
 
+    protected static ArrayList<Blackjack> getDealer() {
+        return dealer;
+    }
+
+    protected static ArrayList<Blackjack> getPlayer() {
+        return player;
+    }
 }
